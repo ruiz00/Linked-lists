@@ -4,7 +4,15 @@ List new_list(void)
 {
     return NULL;
 }
-bool is_empty_list(List li)
+Bool is_empty_list(List li)
+{
+    if( li == NULL)
+    {
+        return true;
+    }
+    return false;
+}
+Bool is_empty_Dlist(Dlist li)
 {
     if( li == NULL)
     {
@@ -110,6 +118,100 @@ List sortedInsert(List li , int x)
     current -> next =new;
     return li;
 }
+List pushfront(List li,int x)
+{
+    ListElement *new = malloc(sizeof(ListElement));
+    if(new == NULL)
+    {
+        printf("Erreur d'allocation memoire \n");
+        exit(1);
+    }
+    new->val= x;
+    if (is_empty_list(li))
+    {
+        new->next=NULL; // si la liste est vide on retourne juste le nouvelle element creer 
+        return new;
+    }
+    // sinon on mets le next de element creer a tout le reste de la liste
+    new->next = li;
+    return new;
+    
+}
+List pushback(List li ,int x)
+{
+    ListElement *new = malloc(sizeof(ListElement));
+    if(new == NULL)
+    {
+        printf("Erreur d'allocation memoire \n");
+        exit(1);
+    }
+    new->val= x;
+    new->next=NULL;
+    // on ajoute la valeur de x a element qu'on viens de creer et comme on ajoute en fin de liste l'element suivant est NULL
+
+    if (is_empty_list(li))
+    {
+        return new;// dans le cas ou la liste est vide on retourne juste l'element
+    }
+
+    ListElement *current =li;// un variable pour iterer sur la liste sans bouger le pointeur li de la liste 
+
+    while (current->next != NULL)
+    {
+        current = current->next;// on utilise la boucle pour deplacer le pointeur jusqu'a la fin de la liste
+    }
+    current->next = new;// on fait pointer le dernier elelment precedent de la liste a la nouveau dernier element
+    return li;
+
+    
+}
+
+List popfront(List li)
+{
+    if (is_empty_list(li))
+    {
+        return new_list();
+    }
+    
+    ListElement *new = malloc(sizeof(ListElement));
+    if(new == NULL)
+    {
+        printf("Erreur d'allocation memoire \n");
+        exit(1);
+    }
+    new=li->next;// on garde toute la liste sauf le premier element de la liste 
+    free(li);
+    return new;
+
+}
+List popback(List li)
+{
+    if (is_empty_list(li))
+    {
+        return new_list();
+    }
+    
+    if (li->next == NULL)
+    {
+        free(li);// si la liste contient juste un element on peut faire un free de toute la liste
+        return new_list();
+    }
+    
+
+    ListElement *temp = li;
+    ListElement *before =li; 
+
+    while (temp-> next != NULL)
+    {
+        before = temp;// before sert a garder element juste avant la temp
+        temp= temp->next;
+    }
+    before->next =NULL;
+    free(temp);
+    return li;
+    
+}
+
 /* liste doublement chainee*/
 
 
@@ -184,6 +286,124 @@ Dlist sortedDinsert(Dlist li , int x)
         on maintient la liste triee grace a la boucle while aio avance tant que la valeur suivante est plus petite
     */
 
+}
+Dlist pushfrontD(Dlist li,int X)
+{
+    DListNode *element = malloc(sizeof(*element));
+    if (element == NULL )
+    {
+        printf("Erreur d'allocation memoire \n");
+        exit(1);
+    }
+    element->val=X;
+    element->next=NULL;
+    element->prev=NULL;
+    
+    if (is_empty_Dlist(li))
+    {
+        li = malloc(sizeof(*li));
+        if(li  == NULL )
+        {
+            printf("Erreur d'allocation memoire \n");
+            exit(1);
+        }
+        li->begin= element;
+        li->end=element ;
+        return li;
+    }
+    li->begin ->prev = element;
+    element->next = li->begin;
+    li->begin = element;
+    return li;
+    /*il faut gerer 2 cas , liste vide et liste non vide
+    si la liste est vide on alloue un espace memoire pour la structure de la liste
+    */
+    /*si la liste n'est pas vide on insere l'element au debut en modifiant les pointeurs*/
+    /*element->next = li->begin;*/
+    /*li->begin->prev = element;*/
+    /*li->begin = element;*/
+    /*return li;*/
+    
+
+    
+    
+}
+Dlist pushbackD(Dlist li, int x)
+{
+
+    DListNode *element = malloc(sizeof(*element));
+    if (element == NULL )
+    {
+        printf("Erreur d'allocation memoire \n");
+        exit(1);
+    }
+    element->val=x;
+    element->next=NULL;
+    element->prev=NULL;
+    if (is_empty_Dlist(li))
+    {
+        li = malloc(sizeof(*li));
+        if(li  == NULL )
+        {
+            printf("Erreur d'allocation memoire \n");
+            exit(1);
+        }
+        li->begin= element;
+        li->end=element ;
+    }
+    else
+    {
+        li->end ->next = element;
+        element->prev = li->end;
+        li->end = element;
+        
+
+    }
+    return li;
+
+}
+Dlist popbackD(Dlist li)
+{
+
+    if (is_empty_Dlist(li))
+    {
+        printf("la liste est vide rein a supprimer \n");
+        return NULL;
+    }
+    if (li ->begin == li->end)
+    {
+        free(li);
+        return NULL;
+    }
+    DListNode *temp = li->end; 
+    li->end = li->end ->prev;
+    li->end ->next = NULL;
+    temp ->next = NULL;
+    temp->prev = NULL;
+    free(temp);
+    return li;
+    
+
+}
+Dlist popfrontD(Dlist li)
+{
+    if (is_empty_Dlist(li))
+    {
+        printf("la liste est vide rein a supprimer \n");
+        return NULL;
+    }
+    if (li ->begin == li->end)
+    {
+        free(li);
+        return NULL;
+    }
+    DListNode *temp = li->begin; 
+    li->begin = li->begin->next;
+    li->begin ->prev = NULL;
+    temp ->next = NULL;
+    temp->prev = NULL;
+    free(temp);
+    return li;
 }
 /*    liste chainee simplement circulaire*/
 
